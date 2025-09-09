@@ -1,0 +1,52 @@
+app-id: net.imput.helium
+runtime: org.freedesktop.Platform
+runtime-version: '24.08'
+sdk: org.freedesktop.Sdk
+command: helium
+
+finish-args:
+  - --share=ipc
+  - --socket=x11
+  - --socket=wayland
+  - --device=dri
+  - --share=network
+  - --filesystem=host
+
+modules:
+  - name: helium
+    buildsystem: simple
+    build-commands:
+      - mkdir -p "${FLATPAK_DEST}/helium" 
+      - cp -r "$_tarball_dir"/* "${FLATPAK_DEST}/helium"
+      - cp ${FLATPAK_DEST}/helium/product_logo_256.png "${FLATPAK_DEST}/helium/helium.png
+
+  - name: zypak
+    sources: 
+      - type: git
+        url: https://github.com/refi64/zypak
+        tag: v2025.09
+        commit: 693a71c5ffa80ec9c9ce2ae03b1ccc493c698e53
+
+  - name: desktop
+    buildsystem: simple
+    build-commands:
+      - cp $ROOT_DIR/package/helium.desktop .
+      - sed -i -e 's|Exec=chromium|Exec=AppRun|g' helium.desktop
+      - cp "${FLATPAK_DEST}/helium/product_logo_256.png" helium.png
+      
+      - install -Dm644 helium.desktop ${FLATPAK_DEST}/share/applications/${FLATPAK_ID}.desktop
+      - install -Dm644 helium.png ${FLATPAK_DEST}/share/icons/hicolor/256x256/apps/${FLATPAK_ID}.png
+      - install helium -Dt ${FLATPAK_DEST}/bin
+
+    sources:
+      - type: file
+        path: helium.desktop
+      - type: file
+        path: helium.png
+      - type: script
+        dest-filename: helium
+        commands:
+          - THIS="$(readlink -f "${0}")"
+          - export LD_LIBRARY_PATH="${FLATPAK_DEST}"/lib:$PATH
+          - export CHROME_WRAPPER="${THIS}"
+          - exec zypak-wrapper ${FLATPAK_DEST}/helium/chrome "$@"

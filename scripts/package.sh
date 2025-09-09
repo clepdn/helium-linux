@@ -79,7 +79,7 @@ cat > "$_app_dir/AppRun" <<'EOF'
 THIS="$(readlink -f "${0}")"
 HERE="$(dirname "${THIS}")"
 export LD_LIBRARY_PATH="${HERE}"/usr/lib:$PATH
-export CHROME_WRAPPER="${THIS}"
+export CHROME_WRAPPER="${THIS}"`
 "${HERE}"/opt/helium/chrome "$@"
 EOF
 chmod a+x "$_app_dir/AppRun"
@@ -97,5 +97,15 @@ appimagetool \
     "$_release_name.AppImage" &
 popd
 wait
+
+# create flatpak
+
+rm -rf "$_app_dir"
+# mkdir -p "$_app_dir/opt/helium/" "$_app_dir/share/icons/hicolor/256x256/apps/"
+
+export TARBALL_DIR=$_tarball_dir
+export ROOT_DIR=$_root_dir
+
+flatpak build-bundle repo helium.flatpak net.imput.helium --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo
 
 rm -rf "$_tarball_dir" "$_app_dir"
