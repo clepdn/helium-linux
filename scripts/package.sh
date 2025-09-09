@@ -106,6 +106,6 @@ rm -rf "$_app_dir"
 export TARBALL_DIR=$_tarball_dir
 export ROOT_DIR=$_root_dir
 
-flatpak build-bundle repo helium.flatpak net.imput.helium --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo
+flatpak build-bundle repo "$_release_name.flatpak" net.imput.helium --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo
 
 rm -rf "$_tarball_dir" "$_app_dir"

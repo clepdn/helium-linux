@@ -39,6 +39,14 @@ runs:
         if-no-files-found: error
         compression-level: 0
 
+    - name: Upload Flatpak artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: helium-${{ steps.version.outputs.version-${{ env.ARCH }}-flatpak
+        path: build/release/helium-${{ steps.version.outputs.version }}-${{ env.ARCH }}.flatpak*
+        if-no-files-found: error
+        compression-level: 0
+
     - name: Upload tar.xz artifact
       uses: actions/upload-artifact@v4
       with:
