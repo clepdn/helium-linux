@@ -16,6 +16,10 @@ RUN curl -s https://api.github.com/repos/AppImage/appimagetool/releases/latest \
     | xargs curl -Lo /usr/bin/appimagetool
 RUN chmod +x /usr/bin/appimagetool
 
+# install flatpak
+
+RUN apt -y install flatpak flatpak-builder # might not need flatpak-builder
+
 # create builder user
 RUN groupadd -g 1000 builder && useradd -d /home/builder -g 1000 -u 1000 -m builder
 

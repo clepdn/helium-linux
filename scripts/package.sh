@@ -98,4 +98,20 @@ appimagetool \
 popd
 wait
 
-rm -rf "$_tarball_dir" "$_app_dir"
+# create flatpak
+
+rm -rf "$_app_dir"
+
+sed -e "s|\${TARBALL_DIR}|$_tarball_dir|g" \
+    -e "s|\${APP_DIR}|$_app_dir|g" \
+    -e "s|\${ROOT_DIR}|$_root_dir|g" \
+    -e "s|\${TARBALL_NAME}|$_tarball_name|g" \
+    -e "s|\${BUILD_DIR}|$_build_dir|g" \
+    -e "s|\${TARBALL_LOC}|$_release_dir/$_tarball_name.tar.xz|g" \
+	"$_root_dir/net.imput.helium.yml" > "$_root_dir/modified-net.imput.helium.yml"
+
+flatpak-builder --force-clean --user --install-deps-from=flathub --repo=repo "$_build_dir/flatpak/" "$_root_dir/modified-net.imput.helium.yml"
+
+flatpak build-bundle repo "$_release_name.flatpak" net.imput.helium --runtime-repo=https://flathub.org/repo/flathub.flatpakrepo
+
+rm -rf "$_tarball_dir"
